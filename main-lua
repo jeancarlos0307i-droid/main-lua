@@ -8,6 +8,42 @@ local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
 local Camera = workspace.CurrentCamera
 local LP = Players.LocalPlayer
+--==================================================
+-- FOV SYSTEM
+--==================================================
+local FOVEnabled = false
+local FOVRadius = 150
+
+local FOVCircle = Drawing.new("Circle")
+FOVCircle.Visible = false
+FOVCircle.Color = Color3.fromRGB(0,255,140)
+FOVCircle.Thickness = 2
+FOVCircle.NumSides = 64
+FOVCircle.Filled = false
+FOVCircle.Radius = FOVRadius
+FOVCircle.Transparency = 1
+
+-- atualizar posição do FOV
+RunService.RenderStepped:Connect(function()
+	FOVCircle.Position = Vector2.new(
+		Camera.ViewportSize.X / 2,
+		Camera.ViewportSize.Y / 2
+	)
+	FOVCircle.Visible = FOVEnabled
+	FOVCircle.Radius = FOVRadius
+end)
+
+-- função pra checar se algo está dentro do FOV
+local function IsInFOV(worldPosition)
+	local screenPos, onScreen = Camera:WorldToViewportPoint(worldPosition)
+	if not onScreen then return false end
+
+	local dist = (Vector2.new(screenPos.X, screenPos.Y) -
+		Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)).Magnitude
+
+	return dist <= FOVRadius
+end
+
 
 --==================================================
 -- KEY SYSTEM
@@ -238,6 +274,24 @@ end)
 -- HACK MOD TAB
 --==================================================
 local HackTab = Window:CreateTab("💀 Hack Mod", 4483362458)
+
+-- FOV
+HackTab:CreateToggle({
+	Name = "Show FOV",
+	CurrentValue = false,
+	Callback = function(v)
+		FOVEnabled = v
+	end
+})
+
+HackTab:CreateSlider({
+	Name = "FOV Size",
+	Range = {50, 400},
+	CurrentValue = 150,
+	Callback = function(v)
+		FOVRadius = v
+	end
+})
 
 -- AIMBOT
 local Aimbot=false
