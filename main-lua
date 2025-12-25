@@ -240,28 +240,34 @@ end)
 local HackTab = Window:CreateTab("💀 Hack Mod", 4483362458)
 
 -- AIMBOT
-local Aimbot = false
-local AimbotToggle
-local M2Debounce = false
+local Aimbot=false
+local AimbotKey=Enum.KeyCode.E
 
-AimbotToggle = HackTab:CreateToggle({
+local AimbotToggle = HackTab:CreateToggle({
 	Name="Aimbot (Closest)",
 	CurrentValue=false,
 	Callback=function(v)
-		Aimbot = v
+		Aimbot=v
 	end
 })
 
--- M2 = liga/desliga
-UIS.InputBegan:Connect(function(input, gp)
+HackTab:CreateInput({
+	Name="Aimbot Keybind (letra)",
+	PlaceholderText="Ex: E",
+	RemoveTextAfterFocusLost=true,
+	Callback=function(txt)
+		txt=txt:upper()
+		if Enum.KeyCode[txt] then
+			AimbotKey=Enum.KeyCode[txt]
+		end
+	end
+})
+
+UIS.InputBegan:Connect(function(input,gp)
 	if gp then return end
-	if input.UserInputType == Enum.UserInputType.MouseButton2 and not M2Debounce then
-		M2Debounce = true
-		Aimbot = not Aimbot
+	if input.KeyCode==AimbotKey then
+		Aimbot=not Aimbot
 		AimbotToggle:Set(Aimbot)
-		task.delay(0.25, function()
-			M2Debounce = false
-		end)
 	end
 end)
 
