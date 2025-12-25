@@ -240,12 +240,30 @@ end)
 local HackTab = Window:CreateTab("💀 Hack Mod", 4483362458)
 
 -- AIMBOT
-local Aimbot=false
-HackTab:CreateToggle({
+local Aimbot = false
+local AimbotToggle
+local M2Debounce = false
+
+AimbotToggle = HackTab:CreateToggle({
 	Name="Aimbot (Closest)",
 	CurrentValue=false,
-	Callback=function(v) Aimbot=v end
+	Callback=function(v)
+		Aimbot = v
+	end
 })
+
+-- M2 = liga/desliga
+UIS.InputBegan:Connect(function(input, gp)
+	if gp then return end
+	if input.UserInputType == Enum.UserInputType.MouseButton2 and not M2Debounce then
+		M2Debounce = true
+		Aimbot = not Aimbot
+		AimbotToggle:Set(Aimbot)
+		task.delay(0.25, function()
+			M2Debounce = false
+		end)
+	end
+end)
 
 local function ClosestTarget()
 	local hrp=LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
